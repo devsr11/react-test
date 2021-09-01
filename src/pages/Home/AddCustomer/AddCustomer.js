@@ -1,6 +1,7 @@
 import { Field, Form, Formik } from 'formik';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
+import { addCustomer } from 'services/services';
 import * as Yup from 'yup';
 
 const validationSchema = Yup.object().shape({
@@ -14,20 +15,15 @@ const validationSchema = Yup.object().shape({
 
 const AddCustomer = () => {
     const history = useHistory()
-    const onSubmitHandler = async (values) => {
-        const url = process.env.REACT_APP_API_BASE_URL + "/customers"
-        const options = {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(values)
-        }
-        const res = await fetch(url, options)
-        const data = await res.json();
-        if (res.ok) {
-            history.push("/")
-        }
+    const onSubmitHandler = (values) => {
+        const data = addCustomer(values)
+        data.then(res => {
+            if (res.ok) {
+                history.push("/")
+            }
+        }).catch(err => {
+            console.log(err);
+        })
     }
 
 

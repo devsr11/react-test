@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ReactComponent as DeleteIcon } from "assets/images/delete.svg";
 import SweetAlert from 'react-bootstrap-sweetalert';
 import { Link } from 'react-router-dom';
+import { deleteCustomer, fetchCustomersList } from 'services/services';
 
 const CustomerListTable = () => {
     const [customerList, setCustomerList] = useState();
@@ -9,37 +10,33 @@ const CustomerListTable = () => {
     const [alert, setAlert] = useState(false)
     const [deleteId, setDeleteId] = useState();
     const [success, setSuccess] = useState(false)
-    const fetchcustomersList = async () => {
-        const url = process.env.REACT_APP_API_BASE_URL + "/customers"
-        const options = {
-            method: "GET"
-        }
-        const res = await fetch(url, options)
-        const data = await res.json()
-        if (res.ok) {
+
+    const deleteCustomerList = (customerId) => {
+        setSuccess(false)
+        const data = deleteCustomer(customerId)
+        data.then(res => {
+            if (res.ok) {
+                setSuccess(true);
+            }
+        });
+        setAlert(false);
+    }
+
+    const fetchList = async () => {
+        const lists = await fetchCustomersList();
+        const data = await lists.json()
+        if (lists.ok) {
             setCustomerList(data)
         }
     }
 
-    const deleteCustomerList = async (customerId) => {
-        setSuccess(false)
-        const url = process.env.REACT_APP_API_BASE_URL + `/customers/${customerId}`
-        const options = {
-            method: "DELETE"
-        }
-        await fetch(url, options);
-        setAlert(false);
-        setSuccess(true);
-    }
-
-
     const data = customerList?.filter((c) => {
-        const regex = new RegExp(value, "g")
+        const regex = new RegExp(value, "i")
         return c.firstName.match(regex) || c.lastName.match(regex) || c.jobTitle.match(regex) || c.emailAddress.match(regex) || c.category.match(regex)
     })
 
     React.useEffect(() => {
-        fetchcustomersList();
+        fetchList()
     }, [success])
 
     return (

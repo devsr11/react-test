@@ -1,15 +1,12 @@
 import React from 'react'
 import { Link, useHistory } from 'react-router-dom';
+import { fetchProducts } from 'services/services';
 
 const Products = () => {
     const [productsList, setProductsList] = React.useState();
     const history = useHistory()
     const fetchProductsList = async () => {
-        const url = process.env.REACT_APP_API_BASE_URL + "/products"
-        const options = {
-            method: "GET"
-        }
-        const res = await fetch(url, options)
+        const res = await fetchProducts()
         const data = await res.json()
         if (res.ok) {
             setProductsList(data)
@@ -17,7 +14,6 @@ const Products = () => {
     }
 
     React.useEffect(() => {
-        console.log(productsList);
         fetchProductsList();
     }, [])
 
